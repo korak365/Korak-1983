@@ -1,0 +1,50 @@
+// Import Apify SDK and Crawlee modules
+import { Actor } from 'apify';
+import { CheerioCrawler, Dataset } from 'crawlee';
+
+await Actor.init();
+
+// Extract input values
+const { startUrls = ['https://www.upwork.com/o/jobs/browse/'], minBudget = 1000, keywords = [], maxRequestsPerCrawl = 50 } = (await Actor.getInput()) ?? {};
+
+const proxyConfiguration = await Actor.createProxyConfiguration();
+
+const crawler = new CheerioCrawler({
+    proxyConfiguration,
+    maxRequestsPerCrawl,
+    async requestHandler({ enqueueLinks, request, $, log }) {
+        log.info(`Processing: ${request.loadedUrl}`);
+
+        const projectEntries = $('.job-tile'); // Update selector as per Upwork structure
+
+        const extractedProjects = projectEntries.map((index, element) => {
+            const projectTitle = $(element).find('.job-title a').text().trim();
+            const budgetString = $(element).find('.budget span').text().replace(/[^\d]/g, '');
+            const budget = parseInt(budgetString, 10) || 0;
+            const description = $(element).find('.description').text().trim();
+            const postDate = $(element).find('.posted-date').text().trim();
+            const url = $(element).find('.job-title a').attr('href');
+
+            // Match keywords
+            const matchedKeywords = keywords.filter(keyword => description.toLowerCase().includes(keyword.toLowerCase()));
+
+            return { projectTitle, budget, postDate, description, url, matchedKeywords };
+        }).get();
+
+        // Filter for high-budget projects
+        for (const project of extractedProjects) {
+            if (project.budget >= minBudget && project.matchedKeywords.length > 0) {
+                await Dataset.pushData(project);
+            }
+        }
+
+        // Enqueue additional links for pagination
+        await enqueueLinks({
+            selector: '.pagination a', // Update selector for pagination links
+        });
+    },
+});
+
+await crawler.run(startUrls);
+
+await Actor.exit();

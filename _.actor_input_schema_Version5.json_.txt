@@ -1,0 +1,41 @@
+{
+    "title": "Input schema for Upwork/Funder Scraper",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "startUrls": {
+            "title": "Start URLs",
+            "type": "array",
+            "description": "List of project listing directories to scrape.",
+            "editor": "requestListSources",
+            "prefill": [
+                {
+                    "url": "https://www.upwork.com/o/jobs/browse/"
+                }
+            ]
+        },
+        "minBudget": {
+            "title": "Minimum Budget",
+            "type": "integer",
+            "description": "Alerts only for projects exceeding this budget amount.",
+            "default": 1000
+        },
+        "keywords": {
+            "title": "Relevant Keywords",
+            "type": "array",
+            "description": "Only scrape projects containing these keywords.",
+            "editor": "stringArray",
+            "default": [
+                "web development",
+                "machine learning",
+                "e-commerce"
+            ]
+        },
+        "maxRequestsPerCrawl": {
+            "title": "Max Requests per Crawl",
+            "type": "integer",
+            "description": "Limit the scraper to this many pages.",
+            "default": 50
+        }
+    }
+}

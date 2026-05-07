@@ -1,0 +1,55 @@
+{
+    "actorSpecification": 1,
+    "fields": {
+        "projectTitle": {
+            "type": "string",
+            "title": "Project Title"
+        },
+        "budget": {
+            "type": "number",
+            "title": "Budget"
+        },
+        "postDate": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Posted Date"
+        },
+        "description": {
+            "type": "string",
+            "title": "Description"
+        },
+        "url": {
+            "type": "string",
+            "title": "URL"
+        }
+    },
+    "views": {
+        "overview": {
+            "title": "Overview",
+            "transformation": {
+                "fields": ["projectTitle", "budget", "postDate", "url"]
+            },
+            "display": {
+                "component": "table",
+                "properties": {
+                    "projectTitle": {
+                        "label": "Project Title",
+                        "format": "text"
+                    },
+                    "budget": {
+                        "label": "Budget",
+                        "format": "number"
+                    },
+                    "postDate": {
+                        "label": "Posted Date",
+                        "format": "date"
+                    },
+                    "url": {
+                        "label": "URL",
+                        "format": "link"
+                    }
+                }
+            }
+        }
+    }
+}
